@@ -177,10 +177,10 @@ def main(config, model_filename):
         print(model)
 
     # optimizer = optim.Adam(model.parameters(), lr=config.lr)
+    model = model.to(device)
+
     optimizer = optim.SGD(model.parameters(), lr=config.lr)
     criterion = nn.CrossEntropyLoss()
-
-    model = model.to(device)
     criterion = criterion.to(device)
 
     if config.do_train:
