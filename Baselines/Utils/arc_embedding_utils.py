@@ -20,8 +20,8 @@ def load_data(path, id_field, word_field, label_field, train_batch_size, dev_bat
     word_vectors = vocab.Vectors(word_embed_file, cache_dir)
 
     train, dev, test = data.TabularDataset.splits(
-            path=path, train='train.jsonl', validation='dev.jsonl',
-            test='test.jsonl', format='json', fields=fields)
+            path=path, train='Task_1_train.jsonl', validation='Task_1_dev.jsonl',
+            test='Task_1_dev.jsonl', format='json', fields=fields)
 
     print("the size of train: {}, dev:{}, test:{}".format(
             len(train.examples), len(dev.examples), len(test.examples)))
