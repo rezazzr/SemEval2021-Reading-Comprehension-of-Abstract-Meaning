@@ -1,31 +1,28 @@
 # -*- coding: utf-8 -*-
 
+import os
 import random
 import time
+
 import numpy as np
-import argparse
-import os
+import torch
+import torch.nn as nn
+import torch.optim as optim
 from tensorboardX import SummaryWriter
+from torchtext import data
 from tqdm import tqdm
 
-import torch
-import torch.optim as optim
-import torch.nn as nn
-
-from torchtext import data
-from torchtext import datasets
-from torchtext import vocab
-
-from Baselines.Utils.utils import word_tokenize, get_device, epoch_time, classifiction_metric
-from Baselines.Utils.arc_embedding_utils import load_data
+from Utils.arc_embedding_utils import load_data
+from Utils.utils import get_device, classifiction_metric
 
 
-def train(epoch_num, model, train_dataloader, dev_dataloader, optimizer, criterion, label_list, out_model_file, log_dir,
+def train(epoch_num, model, train_dataloader, dev_dataloader, optimizer, criterion, label_list,
+          out_model_file, log_dir,
           print_step, clip):
     model.train()
     logging_dir = log_dir + time.strftime("%Y-%m-%d-%H_%M_%S", time.localtime(time.time()))
     writer = SummaryWriter(
-        log_dir=logging_dir)
+            log_dir=logging_dir)
 
     global_step = 0
     best_dev_loss = float('inf')
@@ -67,10 +64,10 @@ def train(epoch_num, model, train_dataloader, dev_dataloader, optimizer, criteri
 
                 train_loss = epoch_loss / train_steps
                 train_acc, train_report = classifiction_metric(
-                    all_preds, all_labels, label_list)
+                        all_preds, all_labels, label_list)
 
                 dev_loss, dev_acc, dev_report = evaluate(
-                    model, dev_dataloader, criterion, label_list)
+                        model, dev_dataloader, criterion, label_list)
                 c = global_step // print_step
 
                 writer.add_scalar("loss/train", train_loss, c)
@@ -127,7 +124,7 @@ def evaluate(model, iterator, criterion, label_list):
             epoch_loss += loss.item()
 
     acc, report = classifiction_metric(
-        all_preds, all_labels, label_list)
+            all_preds, all_labels, label_list)
 
     return epoch_loss / len(iterator), acc, report
 
@@ -140,7 +137,7 @@ def main(config, model_filename):
         os.makedirs(config.cache_dir)
 
     model_file = os.path.join(
-        config.output_dir, model_filename)
+            config.output_dir, model_filename)
 
     # Prepare the device
     gpu_ids = [int(device_id) for device_id in config.gpu_ids.split()]
@@ -164,18 +161,19 @@ def main(config, model_filename):
     label_field = data.LabelField(dtype=torch.long)
 
     train_iterator, dev_iterator, test_iterator = load_data(
-        config.data_path, id_field, text_field, label_field, config.train_batch_size, config.dev_batch_size,
-        config.test_batch_size, device, config.glove_word_file, config.cache_dir)
+            config.data_path, id_field, text_field, label_field, config.train_batch_size,
+            config.dev_batch_size,
+            config.test_batch_size, device, config.glove_word_file, config.cache_dir)
 
     # Word Vector
     word_emb = text_field.vocab.vectors
 
     if config.model_name == "GAReader":
-        from Baselines.GAReader.GAReader import GAReader
+        from GAReader.GAReader import GAReader
         model = GAReader(
-            config.glove_word_dim, config.output_dim, config.hidden_size,
-            config.rnn_num_layers, config.ga_layers, config.bidirectional,
-            config.dropout, word_emb)
+                config.glove_word_dim, config.output_dim, config.hidden_size,
+                config.rnn_num_layers, config.ga_layers, config.bidirectional,
+                config.dropout, word_emb)
         print(model)
 
     # optimizer = optim.Adam(model.parameters(), lr=config.lr)
@@ -186,16 +184,18 @@ def main(config, model_filename):
     criterion = criterion.to(device)
 
     if config.do_train:
-        train(config.epoch_num, model, train_iterator, dev_iterator, optimizer, criterion, ['0', '1', '2', '3', '4'],
+        train(config.epoch_num, model, train_iterator, dev_iterator, optimizer, criterion,
+              ['0', '1', '2', '3', '4'],
               model_file, config.log_dir, config.print_step, config.clip)
 
     model.load_state_dict(torch.load(model_file))
 
     test_loss, test_acc, test_report = evaluate(
-        model, test_iterator, criterion, ['0', '1', '2', '3', '4'])
+            model, test_iterator, criterion, ['0', '1', '2', '3', '4'])
     print("-------------- Test -------------")
     print("\t Loss: {} | Acc: {} | Macro avg F1: {} | Weighted avg F1: {}".format(
-        test_loss, test_acc, test_report['macro avg']['f1-score'], test_report['weighted avg']['f1-score']))
+            test_loss, test_acc, test_report['macro avg']['f1-score'],
+            test_report['weighted avg']['f1-score']))
 
 
 if __name__ == "__main__":
@@ -211,6 +211,7 @@ if __name__ == "__main__":
     model_filename = "model_adam1.pt"
 
     if model_name == "GAReader":
-        from Baselines.GAReader import args, GAReader
+        from GAReader import args, GAReader
 
-        main(args.get_args(data_dir, cache_dir, embedding_folder, output_dir, log_dir), model_filename)
+        main(args.get_args(data_dir, cache_dir, embedding_folder, output_dir, log_dir),
+             model_filename)

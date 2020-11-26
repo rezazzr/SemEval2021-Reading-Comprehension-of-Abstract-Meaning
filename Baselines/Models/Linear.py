@@ -1,6 +1,4 @@
-import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 
 class Linear(nn.Module):
@@ -16,7 +14,6 @@ class Linear(nn.Module):
         nn.init.constant_(self.linear.bias.data, 0)
 
     def forward(self, x):
-
         # x: [batch_size, seq_len, in_features]
         x = self.linear(x)
         # x: [batch_size, seq_len, out_features]
