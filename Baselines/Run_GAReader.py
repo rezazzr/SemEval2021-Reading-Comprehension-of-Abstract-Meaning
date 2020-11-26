@@ -176,9 +176,8 @@ def main(config, model_filename):
                 config.dropout, word_emb)
         print(model)
 
-    # optimizer = optim.Adam(model.parameters(), lr=config.lr)
     model = model.to(device)
-
+    # optimizer = optim.Adam(model.parameters(), lr=config.lr)
     optimizer = optim.SGD(model.parameters(), lr=config.lr)
     criterion = nn.CrossEntropyLoss()
     criterion = criterion.to(device)
