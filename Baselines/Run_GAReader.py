@@ -201,8 +201,8 @@ def main(config, model_filename):
 if __name__ == "__main__":
 
     model_name = "GAReader"
-    data_dir = "C:/Users/Dell/Desktop/sample/multi_sample/"
-    embedding_folder = "C:/Users/Dell/Desktop/mrc_data/embedding/glove/"
+    data_dir = "data/training_data"
+    embedding_folder = "embedding/glove/"
 
     output_dir = "./ga/output"
     cache_dir = "./ga/cache"
