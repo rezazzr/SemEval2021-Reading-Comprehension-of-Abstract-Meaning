@@ -1,14 +1,6 @@
 import spacy
-import time
-import matplotlib.pyplot as plt
-import csv
-from sklearn import metrics
-
 import torch
-
-from torchtext import data
-from torchtext import datasets
-from torchtext import vocab
+from sklearn import metrics
 
 NLP = spacy.blank("en")
 
@@ -45,7 +37,6 @@ def classifiction_metric(preds, labels, label_list):
     labels_list = [i for i in range(len(label_list))]
 
     report = metrics.classification_report(
-        labels, preds, labels=labels_list, target_names=label_list, digits=5, output_dict=True)
+            labels, preds, labels=labels_list, target_names=label_list, digits=5, output_dict=True)
 
     return acc, report
-
