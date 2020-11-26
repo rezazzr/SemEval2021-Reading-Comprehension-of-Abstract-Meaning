@@ -202,7 +202,7 @@ if __name__ == "__main__":
 
     model_name = "GAReader"
     data_dir = "data/training_data"
-    embedding_folder = "embedding/glove/"
+    embedding_folder = "embeddings/glove/"
 
     output_dir = "./ga/output"
     cache_dir = "./ga/cache"
