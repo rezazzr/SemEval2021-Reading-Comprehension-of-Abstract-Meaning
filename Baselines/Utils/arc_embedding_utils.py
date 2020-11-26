@@ -33,6 +33,6 @@ def load_data(path, id_field, word_field, label_field, train_batch_size, dev_bat
 
     train_iter, dev_iter, test_iter = data.BucketIterator.splits(
             (train, dev, test), batch_sizes=(train_batch_size, dev_batch_size, test_batch_size),
-            sort_key=lambda x: len(x.article), device=device, shuffle=True)
+            sort_key=lambda x: len(x.article), device=-1, shuffle=True)
 
     return train_iter, dev_iter, test_iter
